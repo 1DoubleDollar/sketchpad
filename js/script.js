@@ -50,6 +50,8 @@ function updateGridOn(value)
 {
     currentGridOn = value;
 }
+
+const main = document.getElementById('main');
 let gridCheck = document.getElementById('switch');
 const colorPicker = document.getElementById('colorPicker');
 const colorBtn = document.getElementById('colorbtn');
@@ -61,7 +63,7 @@ const hover = document.getElementById('hovering');
 const save = document.getElementById('save');
 const sizeValue = document.getElementById('sizeValue');
 const sizeSlider = document.getElementById('sizeSlider');
-const grid = document.getElementById('grid');
+// const grid = document.getElementById('grid');
 
 colorPicker.oninput= (e)=> updateColor(e.target.value);
 colorBtn.onclick = () => updateMode('color');
@@ -81,6 +83,7 @@ function updateSizeValue(value){
     sizeValue.innerHTML = `${value} x ${value}`;
 }
 function changeSize(value){
+    
     updateSize(value);
     updateSizeValue(value);
     reload();
@@ -88,24 +91,70 @@ function changeSize(value){
 
 function reload(){
     clearGrid();
+    
     setupGrid(currentSize);
 }
 
 function clearGrid(){
-    grid.innerHTML='';
+    document.getElementById('grid').innerHTML='';
+}
+function changeToCanvas(){
+    const canvas = document.createElement("canvas");
+    const grid = document.getElementById('grid');
+    main.replaceChild(canvas,grid);
+    canvas.setAttribute('id','grid');
+    canvas.setAttribute('class','grid');
+
+    sizeSlider.style.opacity = '0';
+    sizeValue.style.opacity = '0';
+}
+function setupCanvas(){
+    const canvas = document.getElementById("canvas")
+    var theColor = '';
+    var lineW = 5;
+    let prevX = null
+    let prevY = null
+    const ctx = canvas.getContext("2d");
+    ctx.lineWidth = lineW;
+    canvas.addEventListener("mousemove", (e) => {
+        if(prevX == null || prevY == null || !mouseDown){
+            prevX = e.clientX
+            prevY = e.clientY
+            return
+        }
+    
+        let currentX = e.clientX
+        let currentY = e.clientY
+    
+        ctx.beginPath()
+        ctx.moveTo(prevX, prevY)
+        ctx.lineTo(currentX, currentY)
+        ctx.stroke()
+    
+        prevX = currentX
+        prevY = currentY
+    })
+}
+function changeToGrid(){
+    const div = document.createElement('div');
+    const canvas = document.querySelector('canvas');
+    canvas.replaceWith(div);
+    div.setAttribute('id','grid');
+    div.setAttribute('class','grid');
+    sizeSlider.style.opacity = '1';
+    sizeValue.style.opacity = '1';
 }
 
 function setupGrid(size){
-    grid.style.gridTemplate = `repeat(${size},1fr)/repeat(${size},1fr)`;
-    // grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`
-    // grid.style.gridTemplateRows = `repeat(${size}, 1fr)`
-
+    const div = document.getElementById('grid');
+    div.style.gridTemplate = `repeat(${size},1fr)/repeat(${size},1fr)`;
+    
     for(let i =0; i<size*size; i++){
         const gridElement = document.createElement('div');
         gridElement.classList.add('grid-element');
         gridElement.addEventListener('mousedown', changeColor);
         gridElement.addEventListener('mouseover', changeColor);
-        grid.appendChild(gridElement);
+        div.appendChild(gridElement);
     }
 }
 function changeColor(e){
@@ -146,9 +195,8 @@ function activateButton(newMode){
     else if(currentMode=== 'erase'){
     eraseBtn.classList.remove('active');
     }   
-    // else if(currentMode=== 'hover'){
-    // colorBtn.classList.remove('active');
-    // }    
+    
+    
     if(newMode=== 'color'){
     colorBtn.classList.add('active');
     }
@@ -161,12 +209,28 @@ function activateButton(newMode){
     else if(newMode=== 'erase'){
     eraseBtn.classList.add('active');
     }   
-    // else if(currentMode=== 'hover'){
-    // colorBtn.classList.remove('active');
-    // }
 }
 gridCheck.addEventListener('click',()=>{
-    updateGridOn(gridCheck.check);
+    updateGridOn(gridCheck.checked);
+
+    if(currentGridOn){ 
+        setTimeout(()=>{
+        const div = document.getElementById('switch-container');
+        div.innerHTML = "GRID";},1000);
+        
+        changeToGrid();
+        setupGrid(DEFAULT_SIZE);
+    }
+    else{
+        setTimeout(()=>{
+        const div = document.getElementById('switch-container');
+        div.innerHTML = "CANVAS";},1000);
+        
+        currentSize = DEFAULT_SIZE;
+        changeSize(currentSize);
+        changeToCanvas();
+        setupCanvas();
+    }
 });
 
 save.addEventListener("click", function() {
@@ -190,7 +254,12 @@ function hovering(){
         hover.classList.remove('active');
     }
 }
+
 window.onload = ()=>{
-    setupGrid(DEFAULT_SIZE);
+    changeToCanvas();
+    setupCanvas();
+
+    
+    // setupGrid(DEFAULT_SIZE);
     activateButton(DEFAULT_MODE);
 }

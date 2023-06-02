@@ -6,19 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sketch Pad</title>
     <link rel="stylesheet" href="style.css" class="css" />
-    <script src="js/script.js" defer></script>
-    <script src="js/html2canvas.js" defer></script>
   </head>
   <body>
     <h1>Etch-A-Sketch</h1>
     <main id = "main">
       <setting>
         <div class="container">
-          <div>Grid</div>
+          <div id = "switch-container">CANVAS</div>
           <label class="toggle" >
             <input type="checkbox" id = "switch" />
             <div class="slider"></div>
-            <div class="labels" data-on="ON" data-off="OFF"></div>
+            <div class="labels" data-on="change" data-off="change"></div>
           </label>
         </div>
         <input type="color" value="#333333" id="colorPicker" />
@@ -32,7 +30,9 @@
         <div id="sizeValue" class="size-Value">16 x 16</div>
         <input type="range" id="sizeSlider" value="16" max="256" min="1" />
       </setting>
-      <div id="grid" class="grid"></div>
+      <canvas id="grid" class="grid"></canvas>
     </main>
+    <script src="./js/script.js" ></script>
+    <script src="./js/html2canvas.js" ></script>
   </body>
 </html>

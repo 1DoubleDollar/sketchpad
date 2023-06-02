@@ -13,7 +13,7 @@ body {
     /* background: #cbcbcb; */
     /* background: rgb(240,255,240); */
     background: rgb(215, 238, 250);
-    overflow:scroll;
+    overflow: visible;
 }
 h1 {
     line-height: 1.2;
