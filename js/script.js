@@ -69,7 +69,7 @@ rainbowBtn.onclick = ()=>updateMode('rainbow');
 grayBtn.onclick = ()=>updateMode('gray');
 eraseBtn.onclick = ()=>updateMode('erase');
 clearBtn.onclick = ()=>reload();
-hover.onclick = ()=>hover();
+hover.onclick = ()=>hovering();
 sizeSlider.onmousemove = (e)=> updateSizeValue(e.target.value);
 sizeSlider.onchange = (e)=> changeSize(e.target.value);
 
@@ -109,7 +109,7 @@ function setupGrid(size){
     }
 }
 function changeColor(e){
-    if((e.type == 'mouseover' && !mouseDown) && gridCheck.checked)
+    if((e.type == 'mouseover' && !mouseDown) && !moving)
     return;
     if(currentMode === 'rainbow')
     {
@@ -179,6 +179,17 @@ save.addEventListener("click", function() {
 		});
 });
 
+let moving = false;
+function hovering(){
+    if(!moving){
+        moving =true;
+        hover.classList.add('active');
+    }
+    else{
+        moving = false;
+        hover.classList.remove('active');
+    }
+}
 window.onload = ()=>{
     setupGrid(DEFAULT_SIZE);
     activateButton(DEFAULT_MODE);
